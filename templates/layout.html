@@ -1,0 +1,25 @@
+$def with(content)
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>Retwis - Example Twitter clone based on the Redis Key-Value DB</title>
+    <link href="/static/style.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div id="page">
+      <div id="header">
+	<a href="/"><img style="border:none" src="logo.png" width="192" height="85" alt="Retwis"></a>
+	<div id="navbar">
+	  $if context.get('account'):
+	    <a href="index">home</a>
+	    | <a href="timeline">timeline</a>
+	    | <a href="logout">logout</a>
+	</div>
+      </div>
+      $:content
+      <div id="footer">Redis-Py is a very simple Twitter clone written in Python as example application of the <a href="http://code.google.com/p/redis/">Redis key-value database</a></div>
+    </div>
+  </body>
+</html>
