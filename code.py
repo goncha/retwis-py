@@ -81,7 +81,8 @@ def see_other_url(path):
 
 
 def logged_in():
-  return (session.get('account') and session.get('account_id'))
+  uid = session.get('account')
+  return uid and redis.Redis(connection_pool=redis_pool).get('uid:%s:username'%(uid,))
 
 
 def require_auth(fn):
@@ -102,7 +103,7 @@ class index(app.page):
 
   def GET(self):
     if logged_in():
-      raise seeother(see_other_url(''))
+      raise web.seeother(see_other_url('/home'))
     else:
       return render.welcome()
 
@@ -117,25 +118,54 @@ class register(app.page):
       r = redis.Redis(connection_pool=redis_pool)
       rkey = 'username:%s:uid'%(username,)
       if r.exists(rkey):
-        return render.welcome(register_msg='Username exists')
+        return render.welcome(register_msg='Username `%s\' exists'%(username,))
 
       if password == password2:
-        id = r.incr('global:nextUserId')
-        if 1 == r.setnx(rkey, id):
-          r.set('uid:%d:username'%(id,), username)
-          r.set('uid:%d:password'%(id,), password)
+        uid = r.incr('global:nextUserId')
+        if 1 == r.setnx(rkey, uid):
+          r.set('uid:%d:username'%(uid,), username)
+          r.set('uid:%d:password'%(uid,), password)
+          session['account'] = uid
           raise web.seeother(see_other_url('/home'))
         else:
-          return render.welcome(register_msg='Username exists')
+          return render.welcome(register_msg='Username `%s\' exists'%(username,))
       else:
         return render.welcome(register_msg='Passwords not matched')
     else:
       return render.welcome(register_msg='Empty username or passwords')
 
 
+class login(app.page):
+  def POST(self):
+    i = web.input()
+    username = i.get('username')
+    password = i.get('password')
+
+    if username and password:
+      r = redis.Redis(connection_pool=redis_pool)
+      uid = r.get('username:%s:uid'%(username,))
+      if uid and password == r.get('uid:%s:password'%(uid,)):
+        session['account'] = uid
+        raise web.seeother(see_other_url('/home'))
+      else:
+        return render.welcome(login_msg='Username `%s\' does not exist, or wrong password'%(username,))
+    else:
+      return render.welcome(login_msg='Empty username or passwords')
+
+
+@require_auth
+class logout(app.page):
+  def GET(self):
+    session.kill()
+    raise web.seeother(see_other_url('/'))
+
+
+@require_auth
 class home(app.page):
   def GET(self):
     return render.home()
+
+
 
 
 

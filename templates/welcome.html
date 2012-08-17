@@ -1,21 +1,21 @@
-$def with(register_msg=None, login_msg=None)
+$def with(register_msg=None, login_msg=None, username=None)
 
 <div id="welcomebox">
   <div id="registerbox">
     <h2>Register!</h2>
     <b>Want to try Retwis? Create an account!</b>
     $if register_msg:
-      <div style="color:red">$register_msg<div>
+      <div style="color:red">$register_msg</div>
     <form method="post" action="register">
       <table>
 	<tr>
-	  <td>Username</td><td><input type="text" name="username"></td>
+	  <td>Username</td><td><input type="text" name="username"></input></td>
 	</tr>
 	<tr>
-	  <td>Password</td><td><input type="password" name="password"></td>
+	  <td>Password</td><td><input type="password" name="password"></input></td>
 	</tr>
 	<tr>
-	  <td>Password (again)</td><td><input type="password" name="password2"></td>
+	  <td>Password (again)</td><td><input type="password" name="password2"></input></td>
 	</tr>
 	<tr>
 	  <td colspan="2" align="right"><input type="submit" name="doit" value="Create an account"></td></tr>
@@ -26,9 +26,9 @@ $def with(register_msg=None, login_msg=None)
       <div style="color:red">$login_msg</div>
     <form method="post" action="login">
       <table><tr>
-	  <td>Username</td><td><input type="text" name="username"></td>
+	  <td>Username</td><td><input type="text" name="username"></input></td>
 	</tr><tr>
-	  <td>Password</td><td><input type="password" name="password"></td>
+	  <td>Password</td><td><input type="password" name="password"></input></td>
 	</tr><tr>
 	  <td colspan="2" align="right"><input type="submit" name="doit" value="Login"></td>
       </tr></table>
